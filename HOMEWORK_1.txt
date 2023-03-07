@@ -133,4 +133,4 @@ response:
            }
  }
 
-The collection is in HOMEWORK_1.postman_collection
+The collection is in HOMEWORK_1.postman_collection.json
