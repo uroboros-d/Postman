@@ -248,7 +248,121 @@ var jsonData = pm.response.json();
 for (var i = 0; i < jsonData.salary.length; i++ ) {
     console.log(jsonData.salary[i]);
 }
+---------------------------------------------------------------------------------
+// 4. send the request
 
+http://162.55.220.72:5005/user_info_2
+
+// 5. check status code: Code is 200
+
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// 8. chech that response has a start_qa_salary parameter
+
+pm.test("Response json has a parameter " + "start_qa_salary", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("start_qa_salary");
+});
+
+// 9. chech that response has a qa_salary_after_6_months parameter
+
+pm.test("Response json has a parameter " + "qa_salary_after_6_months", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("qa_salary_after_6_months");
+});
+
+// 10. chech that response has a qa_salary_after_12_months parameter
+
+pm.test("Response json has a parameter " + "qa_salary_after_12_months", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("qa_salary_after_12_months");
+});
+
+// 11. chech that response has a qa_salary_after_1.5_year parameter
+
+pm.test("Response json has a parameter " + "qa_salary_after_1.5_year", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("qa_salary_after_1.5_year");
+});
+
+// 12. chech that response has a qa_salary_after_3.5_years parameter
+
+pm.test("Response json has a parameter " + "qa_salary_after_3.5_years", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("qa_salary_after_3.5_years");
+});
+
+// 13. chech that response has a person parameter
+
+pm.test("Response json has a parameter " + "person", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property("person");
+});
+
+// 14. check that start_qa_salary from response equales request salary
+
+pm.test("start_qa_salary from response equales request salary = " + request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.start_qa_salary).to.eql(+request.data.salary);
+});
+
+// 15. check that qa_salary_after_6_months from response equales request salary * 2
+
+pm.test("qa_salary_after_6_months from response equales request salary * 2 = " + 2 * request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.qa_salary_after_6_months).to.eql(2 * request.data.salary);
+});
+
+// 16. check that qa_salary_after_12_months from response equales request salary * 2.7
+
+pm.test("qa_salary_after_12_months from response equales request salary * 2.7 = " + 2.7 * request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.qa_salary_after_12_months).to.eql(2.7 * request.data.salary);
+});
+
+// 17. check that qa_salary_after_1.5_year from response equales request salary * 3.3
+
+pm.test("qa_salary_after_1.5_year from response equales request salary * 3.3 = " + 3.3 * request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData["qa_salary_after_1.5_year"]).to.eql(3.3 * request.data.salary);
+});
+
+// 18. check that qa_salary_after_3.5_years from response equales request salary * 3.8
+
+pm.test("qa_salary_after_3.5_years from response equales request salary * 3.8 = " + 3.8 * request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData["qa_salary_after_3.5_years"]).to.eql(3.8 * request.data.salary);
+});
+
+// 19. check that the 1th element of u_name from response equales salary from request
+
+pm.test("the 1th element of u_name from response equales salary from request = " + request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.person.u_name[1]).to.eql(+request.data.salary);
+});
+
+// 20. check that u_age from response equales age from request
+
+pm.test("u_age from response equales age from request = " + request.data.age, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.person.u_age).to.eql(+request.data.age);
+});
+
+// 21. check that u_salary_5_years from response equales salary * 4.2 from request
+
+pm.test("u_salary_5_years from response equales age from request = " + 4.2 * request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.person.u_salary_5_years).to.eql(4.2 * request.data.salary);
+});
+
+// 22. write a loop that outcomes the elements of the person list in order to the console
+
+var jsonData = pm.response.json();
+for (var property in jsonData.person) {
+    console.log("jsonData.person." + property + " = ", jsonData.person[property]);
+}
 
 
 
