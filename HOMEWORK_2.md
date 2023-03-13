@@ -149,5 +149,112 @@ pm.test("Value of parameter age is 4", function () {
     pm.expect(jsonData.family.pets.dog.age).to.eql(4);
 });
 ---------------------------------------------------------------------
+// 1. send the request
+
+http://162.55.220.72:5005/object_info_4
+
+// 2. check status code: Code is 200
+
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// 4. get an object with Params from request URL
+
+var req_params = pm.request.url.query.toObject();   //another way: console.log(pm.request.url.query.get('name'));
+
+// 5. check that response name matches request name (get name from request)
+
+pm.test("Response name matches request name " + req_params.name, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.name).to.eql(req_params.name);
+});
+
+// 6. check that response age matches request age (get age from request)
+
+pm.test("Response age matches request age = " + req_params.age, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.age).to.eql(+req_params.age);
+});
+
+// 7. output salary from request to console
+
+console.log("Salary from request is ", +req_params.salary);
+
+// 8. output salary from response to console
+
+console.log("Salary from response is ", pm.response.json().salary);
+
+// 9. output the 0th element of the salary array
+
+console.log("0th element of salary array is ", pm.response.json().salary[0]);
+
+// 10. output 1th element of salary array
+
+console.log("1th element of salary array is ", pm.response.json().salary[1]);
+
+// 11. output 2nd element of salary array
+
+console.log("2nd element of salary array is ", pm.response.json().salary[2]);
+
+// 12. check that 0th element of response salary matches request salary
+
+pm.test("0th element of response salary equals request salary = " + req_params.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.salary[0]).to.eql(+req_params.salary);
+});
+
+// 13. check that 1th element of response salary equales 2 * request salary
+
+pm.test("1th element of response salary equals 2 * request salary = " + req_params.salary * 2, function () {
+    var jsonData = pm.response.json();
+    pm.expect(+jsonData.salary[1]).to.eql(req_params.salary * 2);
+});
+
+// 14. check that 2th element of response salary equales 3 * request salary
+
+pm.test("2th element of response salary equals 3 * request salary = " + req_params.salary * 3, function () {
+    var jsonData = pm.response.json();
+    pm.expect(+jsonData.salary[2]).to.eql(req_params.salary * 3);
+});
+
+// 15. create a name variable in the environment
+
+pm.environment.set("name");
+
+// 16. create a age variable in the environment
+
+pm.environment.set("age");
+
+// 17. create a salary variable in the environment
+
+pm.environment.set("salary");
+
+// 18. pass the value of the variable name to the environment
+
+pm.environment.set("name", req_params.name);
+
+// 19. pass the value of the variable age to the environment
+
+pm.environment.set("age", req_params.age);
+
+// 20. pass the value of the variable salary to the environment
+
+pm.environment.set("salary", req_params.salary);
+
+// 21. write a loop that outcomes the elements of the salary array in order to the console
+
+var jsonData = pm.response.json();
+for (var i = 0; i < jsonData.salary.length; i++ ) {
+    console.log(jsonData.salary[i]);
+}
+
+
+
+
+
+
+
+
 
 ```
