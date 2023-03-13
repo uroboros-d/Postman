@@ -1,23 +1,23 @@
 HOMEWORK_2 (POSTMAN)
-
+```javascript
 
 // 1. send the request
 
 http://162.55.220.72:5005/first
 
 // 2. check status code: Code is 200
-```java
+
 pm.test("Status code is 200", function () {
     pm.response.to.have.status(200);
 });
-```
+
 // 3. check that the response body contains the correct string
-```javascript
+
 var correct_string = "This is the first responce from server!ss";
 pm.test("Response body contains the correct string: " + correct_string, function () {
     pm.expect(pm.response.text()).to.include(correct_string);
 });
-```
+
 -----------------------------------------------------------------------------------------
 // 1. send the request
 
@@ -150,3 +150,4 @@ pm.test("Value of parameter age is 4", function () {
 });
 ---------------------------------------------------------------------
 
+```
