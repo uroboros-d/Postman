@@ -1,4 +1,4 @@
-HOMEWORK_3 (POSTMAN_
+HOMEWORK_3 (POSTMAN)
 ```javascript
 
 // 1. send the request with login and password
@@ -102,3 +102,74 @@ var jsonData = pm.response.json();
 pm.environment.set("u_salary_1.5_year", jsonData.person["u_salary_1.5_year"]);
 
 // the value of the environment variable "u_salary_1.5_year" is NULL
+------------------------------------------------------------------------------------------------
+ http://162.55.220.72:5005/new_data
+ 
+ // 1.check status code: Code is 200
+ 
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// 2. check json structure
+
+var schema = {
+    "type": "object",
+  "properties": {
+    "age": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string"
+    },
+    "salary": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": ["age", "name", "salary"]
+}
+pm.test("Scheme is valid", function(){
+    pm.response.to.have.jsonSchema(schema);
+});
+
+// 3. check the correctness of calculation of response parameters
+
+// 3.1 check the correctness of calculation of salary[0] parameter
+
+var request_json = request.data;
+pm.test("Calculation of salary[0] parameter is correct: " + request_json.salary*1, function () {
+    var jsonData = pm.response.json();
+    pm.expect(+jsonData.salary[0]).to.eql(request_json.salary*1);
+});
+
+// 3.2 check the correctness of calculation of salary[1] parameter
+// \"" is used to emphasize, that response values are String
+
+var request_json = request.data;
+pm.test("Calculation of salary[1] parameter is correct: \"" + request_json.salary*2 + "\"", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.salary[1]).to.eql(String(request_json.salary*2));
+});
+
+// 3.3 check the correctness of calculation of salary[2] parameter
+// \"" is used to emphasize, that response values are String
+
+var request_json = request.data;
+pm.test("Calculation of salary[2] parameter is correct: \"" + request_json.salary*3 + "\"", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.salary[2]).to.eql(String(request_json.salary*3));
+});
+
+
+```
