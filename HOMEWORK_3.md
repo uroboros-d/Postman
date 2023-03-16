@@ -54,8 +54,8 @@ var schema = {
                 "u_age" : {
                     "type" : "integer"
                 },
-                "u_salary_1.5_year" : {  // FAIL: in response the property is
-                                        // "u_salary_1_5_year"
+                "u_salary_1.5_year" : {  // FAIL: AssertionError: expected data to satisfy schema but found following errors:
+                                         // data.person should have required property 'u_salary_1.5_year'
                     "type" : "number"   
                 }
             },
@@ -86,11 +86,19 @@ pm.test("Calculation of qa_salary_after_12_months parameter is correct: " + requ
     pm.expect(jsonData.qa_salary_after_12_months).to.eql(request_json.salary*2.9);
 });
 
-// 3.3 check the correctness of calculation of u_salary_1_5_year parameter
+// 3.3 check the correctness of calculation of u_salary_1.5_year parameter
 
 var request_json = JSON.parse(pm.request.body.raw);
-pm.test("Calculation of u_salary_1_5_year parameter is correct: " + request_json.salary*4, function () {
+pm.test("Calculation of u_salary_1.5_year parameter is correct: " + request_json.salary*4, function () {
     var jsonData = pm.response.json();
-    pm.expect(jsonData.person.u_salary_1_5_year).to.eql(request_json.salary*4);
+    pm.expect(jsonData.person["u_salary_1.5_year"]).to.eql(request_json.salary*4);
 });
 
+// FAIL: AssertionEror: expected undefined to deeply equal 4000
+
+// 4. pass u_salary_1.5_year parameter value to the request get_test_user
+
+var jsonData = pm.response.json();
+pm.environment.set("u_salary_1.5_year", jsonData.person["u_salary_1.5_year"]);
+
+// the value of the environment variable "u_salary_1.5_year" is NULL
