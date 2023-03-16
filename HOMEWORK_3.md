@@ -171,5 +171,13 @@ pm.test("Calculation of salary[2] parameter is correct: \"" + request_json.salar
     pm.expect(jsonData.salary[2]).to.eql(String(request_json.salary*3));
 });
 
+// 4. check if salary[2] > salary[1] & salary[2] > salary[0]
+
+pm.test("the 2nd element of salary array is greater than the 0th and 1st elements", function () {
+    var jsonData = pm.response.json();
+    pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[0]);
+    pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[1]);
+});
+------------------------------------------------------------------------------------------------
 
 ```
