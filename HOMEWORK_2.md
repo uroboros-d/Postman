@@ -364,11 +364,4 @@ for (var property in jsonData.person) {
     console.log("jsonData.person." + property + " = ", jsonData.person[property]);
 }
 
-
-
-
-
-
-
-
 ```
