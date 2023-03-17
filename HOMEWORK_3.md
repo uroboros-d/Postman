@@ -230,6 +230,93 @@ pm.test("Calculation of daily_sleep parameter is correct: " + 2.5 * request.data
     var jsonData = pm.response.json();
     pm.expect(jsonData.daily_sleep).to.eql(2.5 * request.data.weight);
 });
+-----------------------------------------------------------------------------------------------------------
+http://162.55.220.72:5005/get_test_user
+
+// 1. check status code: Code is 200
+
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// 2. check json structure
+
+var schema = {
+    "type": "object",
+  "properties": {
+    "age": {
+      "type": "integer" // AssertionError: expected data to satisfy schema but found following errors: data.age should be integer
+    },
+    "family": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          ]
+        },
+        "u_salary_1_5_year": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "children",
+        "u_salary_1_5_year"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "salary": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "age",
+    "family",
+    "name",
+    "salary"
+  ]
+}
+pm.test("Schema is valid", function(){
+    pm.response.to.have.jsonSchema(schema);
+});
+
+// 3. check that response salary matches request salary from environment
+
+pm.test("response salary matches request salary from environment: " + request.data.salary, function () {
+    var jsonData = pm.response.json();
+    pm.expect(pm.environment.get("u_salary_1_5_year")).to.eql(jsonData.salary);
+});
+
+// 4. check that response age matches request age from environment
+
+pm.test("response age matches request age: " + request.data.age, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.age).to.eql(request.data.age);
+});
 
 
 
