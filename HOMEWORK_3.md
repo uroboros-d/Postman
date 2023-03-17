@@ -179,5 +179,58 @@ pm.test("the 2nd element of salary array is greater than the 0th and 1st element
     pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[1]);
 });
 ------------------------------------------------------------------------------------------------
+http://162.55.220.72:5005/test_pet_info
+
+// 1. check status code: Code is 200
+
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// 2. check json structure
+
+var schema = {
+    "type" : "object",
+    "properties" : {
+        "name" :
+        {
+            "type" : "string"
+        },
+        "age" :
+        {
+            "type" : "number"
+        },
+        "daily_food" :
+        {
+            "type" : "number"
+        },
+        "daily_sleep" :
+        {
+            "type" : "number"
+        }
+    },
+    "required" : ["name", "age", "daily_food", "daily_sleep"]
+}
+pm.test("Schema is valid", function(){
+    pm.response.to.have.jsonSchema(schema);
+});
+
+// 3. check the correctness of calculation of response parameters
+
+// 3.1 check the correctness of calculation of daily_food parameter
+
+pm.test("Calculation of daily_food parameter is correct: " + 0.012 * request.data.weight, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.daily_food).to.eql(0.012 * request.data.weight);
+});
+
+// 3.2 check the correctness of calculation of daily_sleep parameter
+
+pm.test("Calculation of daily_sleep parameter is correct: " + 2.5 * request.data.weight, function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.daily_sleep).to.eql(2.5 * request.data.weight);
+});
+
+
 
 ```
