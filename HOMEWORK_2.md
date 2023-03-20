@@ -364,4 +364,15 @@ for (var property in jsonData.person) {
     console.log("jsonData.person." + property + " = ", jsonData.person[property]);
 }
 
+// 22a. write to the console a loop that outcomes the elements of the person list including nested ones
+var jsonDataPerson = pm.response.json().person;
+for (var property in jsonDataPerson) {
+    console.log("jsonDataPerson " + property + " = ", jsonDataPerson[property]);
+    if (typeof (jsonDataPerson[property]) == "object") {    
+        for (var item in jsonDataPerson[property]) {
+            console.log('inner_item = ', jsonDataPerson[property][item]);
+        }
+    }    
+}
+
 ```
