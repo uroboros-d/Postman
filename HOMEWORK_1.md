@@ -1,6 +1,5 @@
-```javascript
 HOMEWORK_1 (POSTMAN)
-
+```javascript
 Create a collection of the following requests
 
 Protocol: http
