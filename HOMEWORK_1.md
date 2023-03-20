@@ -1,4 +1,4 @@
-```javascript
+```java
 HOMEWORK_1 (POSTMAN)
 
 Create a collection of the following requests
