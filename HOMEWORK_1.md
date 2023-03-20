@@ -1,3 +1,4 @@
+```javascript
 HOMEWORK_1 (POSTMAN)
 
 Create a collection of the following requests
@@ -134,3 +135,4 @@ response:
  }
 ------------------------------------------------------------
 The collection is in HOMEWORK_1.postman_collection.json
+```
