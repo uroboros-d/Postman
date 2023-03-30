@@ -248,6 +248,21 @@ var jsonData = pm.response.json();
 for (var i = 0; i < jsonData.salary.length; i++ ) {
     console.log(jsonData.salary[i]);
 }
+
+// 21. another options
+
+// var jsonData = pm.response.json();
+// for(item of jsonData.salary) {
+//     console.log(item);
+// }
+
+// var jsonData = pm.response.json();
+// for(item in jsonData.salary) {
+//     console.log(jsonData.salary[item]);
+// }
+
+// var jsonData = pm.response.json();
+// jsonData.salary.forEach(element => console.log(element));
 ---------------------------------------------------------------------------------
 // 4. send the request
 
@@ -365,6 +380,7 @@ for (var property in jsonData.person) {
 }
 
 // 22a. write to the console a loop that outcomes the elements of the person list including nested ones
+
 var jsonDataPerson = pm.response.json().person;
 for (var property in jsonDataPerson) {
     console.log("jsonDataPerson " + property + " = ", jsonDataPerson[property]);
