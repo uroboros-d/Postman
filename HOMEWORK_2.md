@@ -369,8 +369,8 @@ var jsonDataPerson = pm.response.json().person;
 for (var property in jsonDataPerson) {
     console.log("jsonDataPerson " + property + " = ", jsonDataPerson[property]);
     if (typeof (jsonDataPerson[property]) == "object") {    
-        for (var item in jsonDataPerson[property]) {
-            console.log('inner_item = ', jsonDataPerson[property][item]);
+        for (var item of jsonDataPerson[property]) {
+            console.log('inner_item = ', item);
         }
     }    
 }
