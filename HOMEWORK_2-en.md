@@ -205,116 +205,134 @@ pm.test('параметр age имеет значение 4', function(){
 
 http://162.55.220.72:5005/object_info_4
 
-// 2. check status code: Code is 200
+// 2. Статус код 200
 
 pm.test("Status code is 200", function () {
     pm.response.to.have.status(200);
 });
 
-// 4. get an object with Params from request URL
+// 3. Спарсить response body в json
 
-var req_params = pm.request.url.query.toObject();   //another way: console.log(pm.request.url.query.get('name'));
+let jsonData = pm.response.json();
 
-// 5. check that response name matches request name (get name from request)
+// console.log(jsonData);
 
-pm.test("Response name matches request name " + req_params.name, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.name).to.eql(req_params.name);
+// 4. Спарсить request.
+
+let jsonRequest = pm.request.url.query.toObject();
+
+// console.log(jsonRequest);
+
+// 5. Проверить, что name в ответе равно name в request (name забрать из request.)
+
+pm.test('name в ответе равно name в request', ()=>{
+    pm.expect(pm.response.json().name).to.eql(pm.request.url.query.get('name'));
 });
 
-// 6. check that response age matches request age (get age from request)
+// console.log(`response: ${pm.response.json().name}`);
+// console.log(`request: ${pm.request.url.query.get('name')}`);
 
-pm.test("Response age matches request age = " + req_params.age, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.age).to.eql(+req_params.age);
+// 6. Проверить, что age в ответе равно age из request (age забрать из request.)
+
+pm.test('age в ответе равно age из request', function(){
+    pm.expect(pm.response.json().age).to.eql(+pm.request.url.query.toObject().age);
 });
 
-// 7. output salary from request to console
-
-console.log("Salary from request is ", +req_params.salary);
-
-// 8. output salary from response to console
-
-console.log("Salary from response is ", pm.response.json().salary);
-
-// 9. output the 0th element of the salary array
-
-console.log("0th element of salary array is ", pm.response.json().salary[0]);
-
-// 10. output 1th element of salary array
-
-console.log("1th element of salary array is ", pm.response.json().salary[1]);
-
-// 11. output 2nd element of salary array
-
-console.log("2nd element of salary array is ", pm.response.json().salary[2]);
-
-// 12. check that 0th element of response salary matches request salary
-
-pm.test("0th element of response salary equals request salary = " + req_params.salary, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary[0]).to.eql(+req_params.salary);
+pm.test('age в ответе равно age из request', ()=>{
+    pm.expect((pm.response.json().age) == (pm.request.url.query.get('age'))).to.be.true;
 });
 
-// 13. check that 1th element of response salary equales 2 * request salary
+// 7. Вывести в консоль параметр salary из request.
 
-pm.test("1th element of response salary equals 2 * request salary = " + req_params.salary * 2, function () {
-    var jsonData = pm.response.json();
-    pm.expect(+jsonData.salary[1]).to.eql(req_params.salary * 2);
+console.log(`request salary: ${pm.request.url.query.get('salary')} ${typeof(pm.request.url.query.get('salary'))}`);
+
+// 8. Вывести в консоль параметр salary из response.
+
+console.log(`response salary: ${pm.response.json()['salary']}`);
+console.log(pm.response.json().salary);
+
+// 9. Вывести в консоль 0-й элемент параметра salary из response
+
+console.log(`0-й элемент параметра salary из response: ${pm.response.json()['salary'][0]}`);
+
+// 10. Вывести в консоль 1-й элемент параметра salary из response
+console.log(`1-й элемент параметра salary из response: ${pm.response.json().salary[1]}`);
+
+// 11. Вывести в консоль 2-й элемент параметра salary из response
+
+console.log(`2-й элемент параметра salary из response: ${pm.response.json().salary[2]}`);
+
+// 12. Проверить, что 0-й элемент параметра salary равен salary из request (salary забрать из request.)
+
+pm.test('0-й элемент параметра salary из response равен salary из request', function(){
+    pm.expect(pm.response.json()['salary'][0]).to.eql(+pm.request.url.query.toObject().salary);
 });
 
-// 14. check that 2th element of response salary equales 3 * request salary
+// console.log(`0-й элемент параметра salary из response: ${pm.response.json().salary[0]} ${typeof(pm.response.json().salary[0])}`);
+// console.log(`salary из request: ${pm.request.url.query.get('salary')} ${typeof(pm.request.url.query.get('salary'))}`);
 
-pm.test("2th element of response salary equals 3 * request salary = " + req_params.salary * 3, function () {
-    var jsonData = pm.response.json();
-    pm.expect(+jsonData.salary[2]).to.eql(req_params.salary * 3);
+// 13. Проверить, что 1-й элемент параметра salary равен salary*2 из request (salary забрать из request.)
+
+pm.test('1-й элемент параметра salary из response равен salary*2 из request', ()=>{
+    pm.expect((pm.response.json().salary[1]) == (pm.request.url.query.get('salary')*2)).to.be.true;
 });
 
-// 15. create a name variable in the environment
+// console.log(`1-й элемент параметра salary из response: ${pm.response.json().salary[1]} ${typeof(pm.response.json().salary[1])}`);
+// console.log(`salary из request: ${pm.request.url.query.get('salary')} ${typeof(pm.request.url.query.get('salary'))}`);
+// console.log(`salary из request: ${pm.request.url.query.get('salary')} ${typeof(pm.request.url.query.get('salary')*2)}`);
 
-pm.environment.set("name");
+// 14. Проверить, что 2-й элемент параметра salary из response равен salary*3 из request (salary забрать из request)
 
-// 16. create a age variable in the environment
+pm.test('2-й элемент параметра salary из response равен salary*3 из request', function(){
+    pm.expect((pm.response.json()['salary'][2]) == (pm.request.url.query.toObject().salary)*3).to.be.ok;
+});
 
-pm.environment.set("age");
+// 15. Создать в окружении переменную name
 
-// 17. create a salary variable in the environment
+pm.environment.set('name');
 
-pm.environment.set("salary");
+// 16. Создать в окружении переменную age
 
-// 18. pass the value of the variable name to the environment
+pm.environment.set('age');
 
-pm.environment.set("name", req_params.name);
+// 17. Создать в окружении переменную salary
 
-// 19. pass the value of the variable age to the environment
+pm.environment.set('salary');
 
-pm.environment.set("age", req_params.age);
+// 18. Передать в окружение переменную name
 
-// 20. pass the value of the variable salary to the environment
+pm.environment.set('name', pm.response.json().name);
 
-pm.environment.set("salary", req_params.salary);
+// 19. Передать в окружение переменную age
 
-// 21. write a loop that outcomes the elements of the salary array in order to the console
+pm.environment.set('age', pm.response.json().age);
 
-var jsonData = pm.response.json();
-for (var i = 0; i < jsonData.salary.length; i++ ) {
-    console.log(jsonData.salary[i]);
+// 20. Передать в окружение переменную salary
+
+pm.environment.set('salary', pm.request.url.query.get('salary'));
+
+// 21. Написать цикл который выведет в консоль по порядку элементы списка из параметра salary
+
+for(var i=0; i<jsonData.salary.length;i++){
+    console.log(`элемент salary[${i}]: ${jsonData.salary[i]}`);
 }
 
-// 21. another options
-
-// var jsonData = pm.response.json();
-// for(item of jsonData.salary) {
-//     console.log(item);
+// for(var InCount in jsonData.salary){
+//     console.log(`элемент salary[${InCount}]: ${jsonData.salary[InCount]}`); //выводит ключи
 // }
+// for in не следует использовать для array, где важен порядок индексов. Нет гарантии, что for...in будет возвращать индексы в конкретном порядке: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Statements/for...in
 
-// var jsonData = pm.response.json();
-// for(item in jsonData.salary) {
-//     console.log(jsonData.salary[item]);
-// }
+let ofCount = 0;
+for(var element of jsonData.salary){
+    console.log(`элемент salary[${ofCount}]: ${element}`);
+    ofCount++;
+}
 
-// var jsonData = pm.response.json();
-// jsonData.salary.forEach(element => console.log(element));
+let forEachCount = 0;
+jsonData.salary.forEach((element) => {
+    console.log(`элемент salary[${forEachCount}]: ${element}`);
+    forEachCount++;
+});
 ---------------------------------------------------------------------------------
 // 4. send the request
 
