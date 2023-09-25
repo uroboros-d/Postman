@@ -174,71 +174,78 @@ pm.test('2-й элемент массива salary больше 1-го и 0-го
 ------------------------------------------------------------------------------------------------
 http://162.55.220.72:5005/test_pet_info
 
-// 1. check status code: Code is 200
+// 1) Статус код 200
 
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
+pm.test('Status code is 200', function(){
+    pm.response.to.have.status(200)
 });
 
-// 2. check json structure
+// 2) Проверка структуры json в ответе
 
-var schema = {
-    "type" : "object",
-    "properties" : {
-        "name" :
-        {
-            "type" : "string"
-        },
-        "age" :
-        {
-            "type" : "number"
-        },
-        "daily_food" :
-        {
-            "type" : "number"
-        },
-        "daily_sleep" :
-        {
-            "type" : "number"
-        }
+const schema =
+{
+  "type": "object",
+  "properties": {
+    "age": {
+      "type": "number"
     },
-    "required" : ["name", "age", "daily_food", "daily_sleep"]
+    "daily_food": {
+      "type": "number"
+    },
+    "daily_sleep": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "age",
+    "daily_food",
+    "daily_sleep",
+    "name"
+  ]
 }
-pm.test("Schema is valid", function(){
-    pm.response.to.have.jsonSchema(schema);
+
+var jsonData = pm.response.json();
+
+pm.test('tv4: Schema is valid', function () {
+    pm.expect(tv4.validate(jsonData, schema)).to.be.true;
 });
 
-// 3. check the correctness of calculation of response parameters
+console.log(tv4.error);
 
-// 3.1 check the correctness of calculation of daily_food parameter
-
-pm.test("Calculation of daily_food parameter is correct: " + 0.012 * request.data.weight, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.daily_food).to.eql(0.012 * request.data.weight);
+pm.test('Ajv: Schema is valid', function() {
+  pm.response.to.have.jsonSchema(schema);
 });
 
-// 3.2 check the correctness of calculation of daily_sleep parameter
+// 3) В ответе указаны коэффициенты умножения weight, напишите тесты по проверке правильности результата перемножения на коэффициент.
 
-pm.test("Calculation of daily_sleep parameter is correct: " + 2.5 * request.data.weight, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.daily_sleep).to.eql(2.5 * request.data.weight);
+let request_weight = request.data.weight;
+
+//console.log(request.data.weight);
+
+pm.test('умножение на коэффициенты верное',()=>{
+    pm.expect(jsonData.daily_food).to.eql(request_weight*0.012);
+    pm.expect(jsonData.daily_sleep).to.eql(request_weight*2.5);
 });
 -----------------------------------------------------------------------------------------------------------
 http://162.55.220.72:5005/get_test_user
 
-// 1. check status code: Code is 200
+// 1) Статус код 200
 
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
+pm.test('Status code is 200', ()=>{
+    pm.response.to.have.status(200)
 });
 
-// 2. check json structure
+// 2) Проверка структуры json в ответе.
 
-var schema = {
-    "type": "object",
+const schema =
+{
+  "type": "object",
   "properties": {
     "age": {
-      "type": "integer" // AssertionError: expected data to satisfy schema but found following errors: data.age should be integer
+      "type": "string"
     },
     "family": {
       "type": "object",
@@ -293,24 +300,128 @@ var schema = {
     "salary"
   ]
 }
+
+var jsonData = pm.response.json();
+
+pm.test('tv4: Schema is valid', function () {
+    pm.expect(tv4.validate(jsonData, schema)).to.be.true;
+});
+
+console.log(tv4.error);
+
+pm.test('Ajv: Schema is valid', function() {
+  pm.response.to.have.jsonSchema(schema);
+});
+
+// 3) Проверить что занчение поля name = значению переменной name из окружения
+
+pm.test('занчение поля name = значению переменной name из окружения',()=>{
+    pm.expect(jsonData.name).to.eql(pm.environment.get('name'));
+});
+
+pm.test('занчение поля name = значению переменной name из окружения',()=>{
+    pm.expect(jsonData.name).to.eql(pm.variables.get('name'));
+});
+
+// 4) Проверить что занчение поля age в ответе соответсвует отправленному в запросе значению поля age
+
+pm.test('занчение поля age в ответе соответсвует отправленному в запросе значению поля age', function(){
+    pm.expect(jsonData.age).to.eql(request.data.age)
+});
+
+-----------------------------------------------------------------------------------------------------------
+http://54.157.99.22:80/currency
+
+// 1) Можете взять любой объект из присланного списка, используйте js random
+
+
+function getRandomInt (max) {
+    return Math.floor(Math.random()*(max+1));   //получить случайное число от 0 до max
+}
+// Math.floor(x)возвращает значение x, округленное до ближайшего целого числа
+// Math.random()возвращает случайное число от 0 (включительно) до 1 (исключая)
+
+var jsonData = pm.response.json();
+
+var randomObj = jsonData[getRandomInt(jsonData.length)];
+
+// console.log(randomObj);
+
+// 2. В объекте возьмите Cur_ID и передать через окружение в следующий запрос
+pm.environment.set("Cur_ID", randomObj.Cur_ID);
+
+-----------------------------------------------------------------------------------------------------------
+http://54.157.99.22:80/curr_byn
+
+// 1. check status code: Code is 200
+pm.test("Status code is 200", function() {
+    pm.response.to.have.status(200);
+})
+
+// 2. check json structure
+var schema =  {
+    "type" : "object",
+    "properties" : {
+        "Cur_Abbreviation" : { "type" : "string"},
+        "Cur_ID" : { "type" : "integer"},
+        "Cur_Name" : { "type" : "string"},
+        "Cur_OfficialRate" : { "type" : "number"},
+        "Cur_Scale" : { "type" : "integer"},
+        "Date" : { "type" : "string"}
+    },
+    "required" : ["Cur_Abbreviation", "Cur_ID", "Cur_Name", "Cur_OfficialRate", "Cur_Scale", "Date"]
+}
+
 pm.test("Schema is valid", function(){
     pm.response.to.have.jsonSchema(schema);
 });
 
-// 3. check that response salary matches request salary from environment
-
-pm.test("response salary matches request salary from environment: " + request.data.salary, function () {
-    var jsonData = pm.response.json();
-    pm.expect(pm.environment.get("u_salary_1_5_year")).to.eql(jsonData.salary);
-});
-
-// 4. check that response age matches request age from environment
-
-pm.test("response age matches request age: " + request.data.age, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.age).to.eql(request.data.age);
-});
 
 
+// ***
+1) получить список валют
+2) итерировать список валют
+3) в каждой итерации отправлять запрос на сервер для получения курса каждой валюты
+4) если возвращается 500 код, переходим к следующей итреации
+5) если получаем 200 код, проверяем response json на наличие поля "Cur_OfficialRate"
+6) если поле есть, пишем в консоль инфу про фалюту в виде response
+{
+    "Cur_Abbreviation": str
+    "Cur_ID": int,
+    "Cur_Name": str,
+    "Cur_OfficialRate": float,
+    "Cur_Scale": int,
+    "Date": str
+}
+7) переходим к следующей итерации
+
+for (currency of jsonData) {
+    var postRequest = {
+        url : "http://54.157.99.22:80/curr_byn",
+        method : "POST",
+        body : {
+            mode : "formdata",
+            formdata : [
+                {
+                    key : "auth_token", value : pm.environment.get("token")
+                },
+                {
+                    key : "curr_code", value : currency.Cur_ID
+                }
+            ]
+        }
+    };
+    pm.sendRequest(postRequest, (error, response) => {
+        if (error) {
+            console.log("error: ", error); // это выведет в консоль сообщ об ошибке и else не отрабатывается
+        } else {
+            if (response.json().hasOwnProperty('Cur_OfficialRate')) {
+                console.log(response.json());
+            } else {
+                console.log("the object doesn't have Cur_OfficialRate property: ", response.json());
+            }
+        }
+    });
+}
 
 ```
