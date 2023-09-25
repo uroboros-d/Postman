@@ -102,19 +102,20 @@ pm.environment.set('u_salary_1.5_year', jsonData.person.u_salary_1_5_year);
 ------------------------------------------------------------------------------------------------
  http://162.55.220.72:5005/new_data
  
- // 1.check status code: Code is 200
- 
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
+ // 1) Статус код 200
+
+pm.test('Status code is 200',()=>{
+    pm.response.to.have.status(200)
 });
 
-// 2. check json structure
+// 2) Проверка структуры json в ответе
 
-var schema = {
-    "type": "object",
+const schema = 
+{
+  "type": "object",
   "properties": {
     "age": {
-      "type": "number"
+      "type": "integer"
     },
     "name": {
       "type": "string"
@@ -123,7 +124,7 @@ var schema = {
       "type": "array",
       "items": [
         {
-          "type": "number"
+          "type": "integer"
         },
         {
           "type": "string"
@@ -134,46 +135,41 @@ var schema = {
       ]
     }
   },
-  "required": ["age", "name", "salary"]
+  "required": [
+    "age",
+    "name",
+    "salary"
+  ]
 }
-pm.test("Scheme is valid", function(){
-    pm.response.to.have.jsonSchema(schema);
+
+pm.test('tv4: Schema is valid', function() {
+  pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;
+  });
+
+  console.log(tv4.error);
+
+  pm.test('Ajv: Schema is valid', function() {
+  pm.response.to.have.jsonSchema(schema);
 });
 
-// 3. check the correctness of calculation of response parameters
+// 3) В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент
 
-// 3.1 check the correctness of calculation of salary[0] parameter
-
-var request_json = request.data;
-pm.test("Calculation of salary[0] parameter is correct: " + request_json.salary*1, function () {
-    var jsonData = pm.response.json();
-    pm.expect(+jsonData.salary[0]).to.eql(request_json.salary*1);
+let jsonData = pm.response.json();
+let request_salary = request.data.salary;
+pm.test('умножение на коэффициенты верное',()=>{
+    pm.expect(jsonData['salary'][0] == request_salary).to.be.true;
+    pm.expect(jsonData['salary'][1] === String(request_salary*2)).to.be.true;
+    pm.expect(Number(jsonData['salary'][2])).to.eql(request_salary*3);
 });
 
-// 3.2 check the correctness of calculation of salary[1] parameter
-// \"" is used to emphasize, that response values are String
+// 4) проверить, что 2-й элемент массива salary больше 1-го и 0-го
 
-var request_json = request.data;
-pm.test("Calculation of salary[1] parameter is correct: \"" + request_json.salary*2 + "\"", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary[1]).to.eql(String(request_json.salary*2));
+pm.test('2-й элемент массива salary больше 1-го и 0-го', function(){
+    pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[1]).and.to.be.above(+jsonData.salary[0]);
 });
 
-// 3.3 check the correctness of calculation of salary[2] parameter
-// \"" is used to emphasize, that response values are String
-
-var request_json = request.data;
-pm.test("Calculation of salary[2] parameter is correct: \"" + request_json.salary*3 + "\"", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary[2]).to.eql(String(request_json.salary*3));
-});
-
-// 4. check if salary[2] > salary[1] & salary[2] > salary[0]
-
-pm.test("the 2nd element of salary array is greater than the 0th and 1st elements", function () {
-    var jsonData = pm.response.json();
-    pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[0]);
-    pm.expect(+jsonData.salary[2]).to.be.above(+jsonData.salary[1]);
+pm.test('2-й элемент массива salary больше 1-го и 0-го', function(){
+    pm.expect(+jsonData.salary[2] > +jsonData.salary[1] && +jsonData.salary[2] > +jsonData.salary[0]).to.be.true;
 });
 ------------------------------------------------------------------------------------------------
 http://162.55.220.72:5005/test_pet_info
