@@ -1,107 +1,104 @@
 HOMEWORK_3 (POSTMAN)
 ```javascript
 
-// 1. send the request with login and password
+// 1. отправить запрос с логином и паролем
 
 http://162.55.220.72:5005/login
 
-// 2. define token variable in the environment
+// 2) Приходящий токен необходимо передать во все остальные запросы
 
-var jsonData = pm.response.json();
-pm.environment.set("token", jsonData.token);
+pm.environment.set('token', pm.response.json().token);
 ----------------------------------------------------------------------
-// 0. send the request with login and password
 
 http://162.55.220.72:5005/user_info
 
-// 1. check status code: Code is 200
+// 1) Статус код 200
 
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
+pm.test('Статус код 200', function(){
+    pm.response.to.have.status(200)
 });
 
-// 2. check json structure
+// 2) Проверка структуры json в ответе
 
-var schema = {
-    "type" : "object",
-    "properties" : {
-        "start_qa_salary" : {
-            "type" : "integer"
+const schema = 
+{
+  "type": "object",
+  "properties": {
+    "person": {
+      "type": "object",
+      "properties": {
+        "u_age": {
+          "type": "integer"
         },
-        "qa_salary_after_6_months" : {
-            "type" : "number"  
-        },
-        "qa_salary_after_12_months" : {
-            "type" : "number"  
-        },
-        "person" : {
-            "type" : "object",
-            "properties" : {
-                "u_name" : {
-                    "type" : "array",
-                    "items" : [
-                        {
-                            "type" : "string"
-                        },
-                        {
-                            "type" : "integer"
-                        },
-                        {
-                            "type" : "number"
-                        }
-                    ]
-                },
-                "u_age" : {
-                    "type" : "integer"
-                },
-                "u_salary_1.5_year" : {  // FAIL: AssertionError: expected data to satisfy schema but found following errors:
-                                         // data.person should have required property 'u_salary_1.5_year'
-                    "type" : "number"   
-                }
+        "u_name": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
             },
-            "required" : ["u_name", "u_age", "u_salary_1.5_year"]
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "u_salary_1_5_year": {
+          "type": "integer"
         }
+      },
+      "required": [
+        "u_age",
+        "u_name",
+        "u_salary_1_5_year"
+      ]
     },
-    "required" : ["start_qa_salary", "qa_salary_after_6_months", "qa_salary_after_12_months", "person"]
+    "qa_salary_after_12_months": {
+      "type": "number"
+    },
+    "qa_salary_after_6_months": {
+      "type": "integer"
+    },
+    "start_qa_salary": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "person",
+    "qa_salary_after_12_months",
+    "qa_salary_after_6_months",
+    "start_qa_salary"
+  ]
 }
-pm.test("Shema is valid", function(){
-    pm.response.to.have.jsonSchema(schema);
+
+pm.test('Ajv: Schema is valid', function() {
+  pm.response.to.have.jsonSchema(schema);
 });
 
-// 3. check the correctness of calculation of response parameters
 
-// 3.1 check the correctness of calculation of qa_salary_after_6_months parameter
 
-var request_json = JSON.parse(pm.request.body.raw);
-pm.test("Calculation of qa_salary_after_6_months parameter is correct: " + request_json.salary*2, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.qa_salary_after_6_months).to.eql(request_json.salary*2);
+let jsonData = pm.response.json();
+
+pm.test('tv4: Schema is valid', function() {
+    pm.expect(tv4.validate(jsonData, schema)).to.be.true;
 });
 
-// 3.2 check the correctness of calculation of qa_salary_after_12_months parameter
+console.log(tv4.error);
 
-var request_json = JSON.parse(pm.request.body.raw);
-pm.test("Calculation of qa_salary_after_12_months parameter is correct: " + request_json.salary*2.9, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.qa_salary_after_12_months).to.eql(request_json.salary*2.9);
+// 3) В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент
+
+request_salary = JSON.parse(pm.request.body.raw).salary;
+pm.test('умножение на коэффициенты верное', function(){
+    pm.expect(jsonData.start_qa_salary).to.eql(request_salary*1);
+    pm.expect(jsonData.qa_salary_after_6_months).to.eql(request_salary*2);
+    pm.expect(jsonData.qa_salary_after_12_months).to.eql(request_salary*2.9);
+    pm.expect(jsonData.person.u_salary_1_5_year).to.eql(request_salary*4);
 });
 
-// 3.3 check the correctness of calculation of u_salary_1.5_year parameter
+// 4) Достать значение из поля 'u_salary_1.5_year' и передать в поле salary запроса http://162.55.220.72:5005/get_test_user
 
-var request_json = JSON.parse(pm.request.body.raw);
-pm.test("Calculation of u_salary_1.5_year parameter is correct: " + request_json.salary*4, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.person["u_salary_1.5_year"]).to.eql(request_json.salary*4);
-});
-
-// FAIL: AssertionEror: expected undefined to deeply equal 4000
-
-// 4. pass u_salary_1.5_year parameter value to the request get_test_user
-
-var jsonData = pm.response.json();
-pm.environment.set("u_salary_1.5_year", jsonData.person["u_salary_1.5_year"]);
-
-// the value of the environment variable "u_salary_1.5_year" is NULL
+pm.environment.set('u_salary_1.5_year', jsonData.person.u_salary_1_5_year);
 ------------------------------------------------------------------------------------------------
  http://162.55.220.72:5005/new_data
  
