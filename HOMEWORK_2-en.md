@@ -5,17 +5,15 @@ HOMEWORK_2 (POSTMAN)
 
 http://162.55.220.72:5005/first
 
-// 2. check status code: Code is 200
+// 2. Статус код 200
 
-pm.test("Status code is 200", function () {
+pm.test('Статус код 200', function() {
     pm.response.to.have.status(200);
 });
 
-// 3. check that the response body contains the correct string
-
-var correct_string = "This is the first responce from server!ss";
-pm.test("Response body contains the correct string: " + correct_string, function () {
-    pm.expect(pm.response.text()).to.include(correct_string);
+//3. Проверить, что в body приходит правильный string
+pm.test('В body приходит правильный string', function () {
+    pm.response.to.have.body('This is the first responce from server!ss');
 });
 
 -----------------------------------------------------------------------------------------
@@ -23,130 +21,184 @@ pm.test("Response body contains the correct string: " + correct_string, function
 
 http://162.55.220.72:5005/user_info_3
 
-// 2. check status code: Code is 200
+// 2. Статус код 200
 
-pm.test("Status code is 200", function () {
+pm.test('Статус код 200', function(){
     pm.response.to.have.status(200);
 });
 
-// 4. check that response name matches request name (enter name manually)
-
-pm.test("Response name matches request name Gary", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.name).to.eql("Gary");
+pm.test('Successful POST request', ()=>{
+    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);
 });
 
-// 5. check that response age matches request age (enter age manually)
+// 3. Спарсить response body в json
 
-pm.test("Response age matches request age 44", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.age).to.eql("44");
+let jsonData = pm.response.json();
+
+// console.log(jsonData);
+
+// 4. Проверить, что name в ответе равно name в request (name вбить руками)
+
+pm.test('name в ответе равно name в request', ()=> {
+    let jsonData = pm.response.json();
+    pm.expect(jsonData.name).to.eql('Yarik');
 });
 
-// 6. check that response salary matches request salary (enter salary manually)
+// 5. Проверить, что age в ответе равно age в request (age вбить руками.)
 
-pm.test("Response salary matches request salary 1000", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary).to.eql(1000);
+pm.test('age в ответе равно age в request', function() {
+    pm.expect(+jsonData.age).to.eql(7);
 });
 
-// 8. check that response name matches request name (get name from request)
+// 6. Проверить, что salary в ответе равно salary в request (salary вбить руками.)
 
-pm.test("Response name matches request name " + request.data.name, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.name).to.eql(request.data.name);
+pm.test('salary в ответе равно salary в request', ()=>{
+    pm.expect(jsonData.salary).to.deep.eql(1000);
 });
 
-// 9. check that response age matches request age (get age from request)
+// 7. Спарсить request
 
-pm.test("Response age matches request age " + request.data.age, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.age).to.eql(request.data.age);
+let requestData = request.data;
+
+// console.log(requestData);
+
+// 8. Проверить, что name в ответе равно name в request (name забрать из request.)
+
+pm.test('name в ответе равно name в request', function(){
+    pm.expect(pm.response.json().name).to.equal(request.data.name);
 });
 
-// 10. check that response salary matches request salary (get salary from request)
+// console.log(`response.name: ${pm.response.json().name} ${typeof(pm.response.json().name)}`);
+// console.log(`request.name: ${request.data.name} ${typeof(request.data.name)}`);
 
-pm.test("Response salary matches request salary " + request.data.salary, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary).to.eql(+request.data.salary);
+// 9. Проверить, что age в ответе равно age в request (age забрать из request.)
+
+pm.test('age в ответе равно age в request', ()=>{
+    pm.expect(pm.response.json().age === request.data.age).to.be.ok;
 });
 
-// 11. output family from response to console
+// console.log(`response.age: ${pm.response.json().age} ${typeof(pm.response.json().age)}`);
+// console.log(`request.age: ${request.data.age} ${typeof(request.data.age)}`);
 
-console.log("family: ", pm.response.json().family);
+// 10. Проверить, что salary в ответе равно salary в request (salary забрать из request.)
 
-// 12. check that u_salary_1_5_year from response equals 4 * salary from request
-
-pm.test("u_salary_1_5_year from response equals 4 * salary from request " + 4 * request.data.salary, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.family.u_salary_1_5_year).to.eql(+4 * request.data.salary);
+pm.test('salary в ответе равно salary в request', ()=>{
+    pm.expect(pm.response.json().salary == request.data.salary).to.be.true;
 });
+
+// другие варианты с явным приведением типов
+
+ pm.test('salary в ответе равно salary в request', ()=>{
+     pm.expect(String(pm.response.json().salary)).to.eql(request.data.salary);
+ });
+
+ pm.test('salary в ответе равно salary в request', ()=>{
+     pm.expect(pm.response.json().salary).to.eql(Number(request.data.salary));
+ });
+
+// console.log(`request.salary: ${request.data.salary} ${typeof(request.data.salary)}`);
+// console.log(`response.salary: ${pm.response.json().salary} ${typeof(pm.response.json().salary)}`)
+
+// 11. Вывести в консоль параметр family из response.
+
+console.log(pm.response.json()['family']);
+
+// 12. Проверить что u_salary_1_5_year в ответе равно salary*4 (salary забрать из request)
+
+pm.test('u_salary_1_5_year в ответе равно salary*4', function(){
+    pm.expect(pm.response.json()['family']['u_salary_1_5_year']).to.eql(request.data.salary*4)
+})
 -------------------------------------------------------------------------------------------------
 // 1. send the request
 
 http://162.55.220.72:5005/object_info_3
 
-// 2. check status code: Code is 200
+// 2. Статус код 200
 
-pm.test("Status code is 200", function () {
+pm.test('Status code is 200', function(){
     pm.response.to.have.status(200);
 });
 
-// 4. get object with Params from url of request
+// 3. Спарсить response body в json
 
-var req_params = pm.request.url.query.toObject();           // another way: console.log(pm.request.url.query.get('name'));
+let jsonData = pm.response.json();
 
-// 5. check that response name matches request name (get name from request)
+// console.log(jsonData);
 
-pm.test("Response name matches request name " + req_params.name, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.name).to.eql(req_params.name);
+// 4. Спарсить request
+
+let requestURL = pm.request.url.query.toObject();
+
+// console.log(requestURL);
+// console.log(pm.request.url.query);
+// console.log(pm.request.url.query[0]);
+
+// 5. Проверить, что name в ответе равно name в request (name забрать из request.)
+
+pm.test('name в ответе равно name в request', function(){
+    pm.expect(pm.response.json().name).to.eql(pm.request.url.query.toObject().name);
 });
 
-// 6. check that response age matches request age (get age from request)
+// console.log(pm.response.json().name);
+// console.log(pm.request.url.query.toObject().name);
 
-pm.test("Response age matches request age " + req_params.age, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.age).to.eql(req_params.age);
+// 6. Проверить, что age в ответе равно age в request (age забрать из request.)
+
+pm.test('age в ответе равно age в request', ()=>{
+    pm.expect(pm.response.json()['age']).to.eql(pm.request.url.query.get('age'));
 });
 
-// 7. check that response salary matches request salary (get salary from request)
+// console.log(pm.response.json()['age'], typeof(pm.response.json()['age']));
+// console.log(pm.request.url.query.get('age'), typeof(pm.request.url.query.get('age')));
 
-pm.test("Response salary matches request salary " + req_params.salary, function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.salary).to.eql(+req_params.salary);
+// 7. Проверить, что salary в ответе равно salary в request (salary забрать из request.)
+
+pm.test('salary в ответе равно salary в request', function(){
+    pm.expect(pm.response.json().salary == pm.request.url.query.toObject().salary).to.be.true;
 });
 
-// 8. output family from response to console
+// console.log(pm.request.url.query.toObject().salary, typeof(pm.request.url.query.toObject().salary));
+// console.log(pm.response.json().salary, typeof(pm.response.json().salary) );
 
-console.log("family: ", pm.response.json().family);
+// 8. Вывести в консоль параметр family из response
 
-// 9. check that dog from response has parameter name
+console.log(pm.response.json()['family']);
 
-pm.test("Dog from response has parameter name", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.family.pets.dog).to.have.property("name");
+// 9. Проверить, что у параметра dog есть параметры name.
+
+pm.test('у параметра dog есть параметры name', ()=>{
+    pm.expect(pm.response.json().family.pets.dog).to.have.property('name');
+    pm.expect(pm.response.json().family.pets.dog.name).to.not.be.empty;
 });
 
-// 10. check that dog from response has parameter age
+// 10. Проверить, что у параметра dog есть параметры age.
 
-pm.test("Dog from response has parameter age", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.family.pets.dog).to.have.property("age");
+pm.test('у параметра dog есть параметры age', function(){
+    pm.expect(pm.response.json().family.pets.dog).to.have.any.keys('age');
 });
 
-// 11. check that the value of parameter name is Luky
+// 11. Проверить, что параметр name имеет значение Luky
 
-pm.test("Value of parameter name is Luky", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.family.pets.dog.name).to.eql("Luky");
+pm.test('параметр name имеет значение Luky', function(){
+    pm.expect(pm.response.json().family.pets.dog).to.have.property('name', 'Luky');
 });
 
-// 12. check that value of parameter age is 4
+pm.test('параметр name имеет значение Luky', ()=>{
+    pm.expect(pm.response.json().family.pets.dog.name).to.eql('Luky');
+});
 
-pm.test("Value of parameter age is 4", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData.family.pets.dog.age).to.eql(4);
+pm.test('параметр name имеет значение Luky', function(){
+    pm.expect(pm.response.json().family.pets.dog.name === 'Luky').to.be.true;
+});
+
+const assert = require('assert');   //импорт библиотеки Node.js 
+pm.test('параметр name имеет значение Luky', ()=>{
+    assert.equal(pm.response.json().family.pets.dog.name, 'Luky');
+});
+
+// 12. Проверить, что параметр age имеет значение 4.
+pm.test('параметр age имеет значение 4', function(){
+    pm.expect(pm.response.json()['family']['pets']['dog']['age']).to.eql(4);
 });
 ---------------------------------------------------------------------
 // 1. send the request
