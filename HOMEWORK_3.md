@@ -1,6 +1,9 @@
 HOMEWORK_3 (POSTMAN)
 ```javascript
 
+The collection is in Ksendzov_hw_3.postman_collection.json
+
+
 // 1. отправить запрос с логином и паролем
 
 http://162.55.220.72:5005/login
