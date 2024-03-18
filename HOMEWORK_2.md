@@ -1,6 +1,8 @@
 HOMEWORK_2 (POSTMAN)
 ```javascript
 
+The collection is in Ksendzov_hw_2.postman_collection.json
+
 // 1. send the request
 
 http://162.55.220.72:5005/first
