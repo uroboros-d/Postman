@@ -2,6 +2,8 @@ HOMEWORK_1 (POSTMAN)
 ```javascript
 Create a collection of the following requests
 
+The collection is in HOMEWORK_1.postman_collection.json
+
 Protocol: http
 IP: 162.55.220.72
 Port: 5005
